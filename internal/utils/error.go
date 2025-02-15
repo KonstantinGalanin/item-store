@@ -13,6 +13,7 @@ var (
 	ErrNeedMoreChars = errors.New("must be more than 8 characters")
 	ErrNoUser            = errors.New("user not found")
 	ErrWrongPass = errors.New("wrong email or password")
+	ErrNotEnoughBalance = errors.New("Not enough balance")
 )
 
 func WriteErrorResponse(w http.ResponseWriter, err error, status int) {

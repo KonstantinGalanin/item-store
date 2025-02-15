@@ -8,11 +8,14 @@ import (
 
 type UserRepo interface {
 	BuyItem(userID, itemID int) error
-	SendCoin(fromUserName, toUserName string, amount int) error
-	GetInfo(userID int) (*entities.InfoResponse, error)
+	SendCoin(fromUserID, toUserID int, amount int) error
 	Auth(userName, password string) (*entities.User, error)
 	GetUserID(userName string) (int, error)
 	GetItemID(itemName string) (int, error)
+	GetCoinsInfo(userID int) (int, error)
+	GetInventoryInfo(userID int) ([]*entities.Item, error)
+	GetReceiveInfo(userID int) ([]*entities.ReceiveOperation, error)
+	GetSentInfo(userID int) ([]*entities.SentOperation, error)
 }
 
 type UserService struct {
@@ -35,7 +38,12 @@ func (u *UserService) BuyItem(userName, itemName string) error {
 }
 
 func (u *UserService) SendCoin(fromUser, toUser string, amount int) error {
-	if err := u.UserRepo.SendCoin(fromUser, toUser, amount); err != nil {
+	fromUserID, err := u.UserRepo.GetUserID(fromUser)
+	if err != nil {
+		return err
+	}
+	toUserID, err := u.UserRepo.GetUserID(toUser)
+	if err := u.UserRepo.SendCoin(fromUserID, toUserID, amount); err != nil {
 		return err
 	}
 
@@ -44,15 +52,37 @@ func (u *UserService) SendCoin(fromUser, toUser string, amount int) error {
 
 func (u *UserService) GetInfo(userName string) (*entities.InfoResponse, error) {
 	userID, err := u.UserRepo.GetUserID(userName)
-	if err != nil {
-		return nil, err
-	}
-	coinHistory, err := u.UserRepo.GetInfo(userID)
+
+	coins, err := u.UserRepo.GetCoinsInfo(userID)
 	if err != nil {
 		return nil, err
 	}
 
-	return coinHistory, nil
+	inventory, err := u.UserRepo.GetInventoryInfo(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	receives, err := u.UserRepo.GetReceiveInfo(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	sents, err := u.UserRepo.GetSentInfo(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	info := &entities.InfoResponse{
+		Coins: coins,
+		Inventory: inventory,
+		CoinHistory: entities.CoinHistory{
+			Received: receives,
+			Sent: sents,
+		},
+	}
+
+	return info, nil
 }
 
 func (u *UserService) Auth(userName, password string) (*entities.User, error) {

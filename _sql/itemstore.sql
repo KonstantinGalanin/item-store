@@ -29,8 +29,7 @@ CREATE TABLE exchanges(
     id SERIAL PRIMARY KEY,
     from_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     to_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    amount INT NOT NULL,
-    exchange_date TIMESTAMP DEFAULT NOW()
+    amount INT NOT NULL
 );
 
 DROP TABLE IF EXISTS purchases;

@@ -11,7 +11,7 @@ type User struct {
 
 type Item struct {
 	ItemType string `json:"type"`
-	Quantity int `json:"quantity"`
+	Quantity int    `json:"quantity"`
 }
 
 type InfoResponse struct {
@@ -20,22 +20,21 @@ type InfoResponse struct {
 	CoinHistory CoinHistory `json:"coinHistory"`
 }
 
-
 type ErrorResponse struct {
 	Errors string `json:"errors"`
 }
 
 type CoinHistory struct {
 	Received []*ReceiveOperation `json:"received"`
-	Sent []*SentOperation `json:"sent"`
+	Sent     []*SentOperation    `json:"sent"`
 }
 
 type SentOperation struct {
 	ToUser string `json:"toUser"`
-	Amount int `json:"amount"`
+	Amount int    `json:"amount"`
 }
 
 type ReceiveOperation struct {
 	FromUser string `json:"fromUser"`
-	Amount int `json:"amount"`
+	Amount   int    `json:"amount"`
 }
