@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	dsn := "host=localhost port=5432 user=admin password=mypassword dbname=itemstore sslmode=disable"
+	dsn := "host=db port=5432 user=admin password=mypassword dbname=itemstore sslmode=disable"
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		panic(err)
@@ -37,7 +37,7 @@ func main() {
 	}
 
 	r := router.NewRouter(userHandler)
-	err = http.ListenAndServe(":8081", r)
+	err = http.ListenAndServe(":8000", r)
 	if err != nil {
 		panic(err)
 	}

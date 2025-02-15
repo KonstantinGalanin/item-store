@@ -14,7 +14,7 @@ type UserPostgresRepo struct {
 }
 
 const (
-	InitBalance = 100
+	InitBalance = 1000
 )
 
 func NewUserPostgresRepo(db *sql.DB) *UserPostgresRepo {
@@ -177,38 +177,6 @@ func (u *UserPostgresRepo) GetSentInfo(userID int) ([]*entities.SentOperation, e
 
 	return receives, nil
 }
-
-// func (u *UserPostgresRepo) GetInfo(userID int) (*entities.InfoResponse, error) {
-// 	rows, err := u.DB.Query(GetInventory, userID)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer rows.Close()
-
-// 	response := &entities.InfoResponse{
-// 		Inventory: make([]*entities.Item, 0),
-// 	}
-
-// 	for rows.Next() {
-// 		var itemName string
-// 		var quantity int
-
-// 		if err := rows.Scan(&itemName, &quantity); err != nil {
-// 			return nil, err
-// 		}
-
-// 		response.Inventory = append(response.Inventory, &entities.Item{
-// 			ItemType: itemName,
-// 			Quantity: quantity,
-// 		})
-// 	}
-
-// 	if err := rows.Err(); err != nil {
-// 		return nil, err
-// 	}
-
-// 	return response, nil
-// }
 
 func (u *UserPostgresRepo) GetUserByUsername(username string) (*entities.User, error) {
 	user := &entities.User{}

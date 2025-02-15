@@ -1,11 +1,30 @@
-version: '3'
-
 # docker-compose up
 # docker-compose down
 # docker rm $(docker ps -a -q) && docker volume prune -f
 
+
 services:
-  postgres:
+  item-store:
+      build: .
+      container_name: item-store
+      ports:
+        - "8000:8000"
+      environment:
+        # енвы подключения к БД
+        - DATABASE_PORT=5432
+        - DATABASE_USER=admin
+        - DATABASE_PASSWORD=mypassword
+        - DATABASE_NAME=itemstore
+        - DATABASE_HOST=db #
+        # порт сервиса
+        - SERVER_PORT=8000
+      depends_on:
+        db:
+            condition: service_healthy
+      networks:
+        - internal
+
+  db:
     image: postgres:15
     environment:
       POSTGRES_USER: admin
@@ -15,3 +34,16 @@ services:
       - "5432:5432"
     volumes:
       - "./_sql/:/docker-entrypoint-initdb.d/"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d itemstore"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    networks:
+      - internal
+
+
+networks:
+  internal:
+    driver: bridge
