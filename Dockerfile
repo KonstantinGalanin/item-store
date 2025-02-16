@@ -7,8 +7,8 @@ FROM alpine AS run_stage
 WORKDIR /app_binary
 COPY --from=build_stage /go/bin/item_store /app_binary/
 RUN chmod +x ./item_store
-EXPOSE 8000/tcp
+EXPOSE 8080/tcp
 ENTRYPOINT ./item_store
 
-EXPOSE 8000/tcp
+EXPOSE 8080/tcp
 CMD [ "item_store" ]

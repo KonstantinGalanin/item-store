@@ -6,6 +6,7 @@ import (
 	"github.com/KonstantinGalanin/itemStore/internal/entities"
 )
 
+//go:generate mockgen -source=user.go -destination=../repository/user_repo_mock.go -package=repository
 type UserRepo interface {
 	BuyItem(userID, itemID int) error
 	SendCoin(fromUserID, toUserID int, amount int) error
@@ -20,6 +21,12 @@ type UserRepo interface {
 
 type UserService struct {
 	UserRepo UserRepo
+}
+
+func NewUserService(userRepo UserRepo) *UserService{
+	return &UserService{
+		UserRepo: userRepo,
+	}
 }
 
 func (u *UserService) BuyItem(userName, itemName string) error {
@@ -52,6 +59,9 @@ func (u *UserService) SendCoin(fromUser, toUser string, amount int) error {
 
 func (u *UserService) GetInfo(userName string) (*entities.InfoResponse, error) {
 	userID, err := u.UserRepo.GetUserID(userName)
+	if err != nil {
+		return nil, err
+	}
 
 	coins, err := u.UserRepo.GetCoinsInfo(userID)
 	if err != nil {
@@ -91,8 +101,6 @@ func (u *UserService) Auth(userName, password string) (*entities.User, error) {
 		fmt.Println("auth service error", err)
 		return nil, err
 	}
-
-	fmt.Println("auth service no errir",user)
 
 	return user, nil
 }

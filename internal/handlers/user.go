@@ -28,10 +28,12 @@ func Validate(username, password string) error {
 	return nil
 }
 
+
 type JwtService interface {
 	CreateToken(userItem *entities.User) ([]byte, error)
 }
 
+//go:generate mockgen -source=user.go -destination=../service/user_service_mock.go -package=service
 type UserService interface {
 	BuyItem(userName string, itemName string) error
 	SendCoin(fromUser, toUser string, amount int) error
@@ -42,6 +44,13 @@ type UserService interface {
 type UserHandler struct {
 	UserService UserService
 	JwtService  JwtService
+}
+
+func NewUserHandler(userService UserService, jwtService  JwtService) *UserHandler {
+	return &UserHandler{
+		UserService: userService,
+		JwtService: jwtService,
+	}
 }
 
 func (u *UserHandler) Auth(w http.ResponseWriter, r *http.Request) {
@@ -61,7 +70,7 @@ func (u *UserHandler) Auth(w http.ResponseWriter, r *http.Request) {
 
 	user, err := u.UserService.Auth(data.Username, data.Password)
 	if err != nil {
-		utils.WriteErrorResponse(w, err, http.StatusUnauthorized) // or bad request
+		utils.WriteErrorResponse(w, err, http.StatusUnauthorized)
 		return 
 	}
 

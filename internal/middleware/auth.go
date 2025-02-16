@@ -12,7 +12,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user, err := jwt.GetToken(r.Header.Get("Authorization"))
 		if err != nil {
-			utils.WriteErrorResponse(w, err, http.StatusUnauthorized) // or bad request
+			utils.WriteErrorResponse(w, err, http.StatusUnauthorized)
 			return
 		}
 

@@ -66,9 +66,6 @@ func (u *UserPostgresRepo) BuyItem(userID, itemID int) error {
 		return fmt.Errorf("get price error: %w", err)
 	}
 
-	fmt.Println("balance:", balance)
-	fmt.Println("price:", price)
-
 	if balance < price {
 		return fmt.Errorf("buy item error: %w", utils.ErrNotEnoughBalance)
 	}
@@ -246,8 +243,6 @@ func (u *UserPostgresRepo) SendCoin(fromUserID, toUserID int, amount int) error 
 	if err != nil {
 		return err
 	}
-
-	fmt.Println(fromUser.Coins, amount)
 	if fromUser.Coins < amount {
 		return fmt.Errorf("send coin error: %w", utils.ErrNotEnoughBalance)
 	}

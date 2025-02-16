@@ -2,7 +2,9 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/KonstantinGalanin/itemStore/internal/handlers"
 	repository "github.com/KonstantinGalanin/itemStore/internal/repository/user"
@@ -13,8 +15,18 @@ import (
 	_ "github.com/lib/pq"
 )
 
+var (
+	dbHost = os.Getenv("DATABASE_HOST")
+	dbPort = os.Getenv("DATABASE_PORT")
+	dbUser = os.Getenv("DATABASE_USER")
+	dbPass = os.Getenv("DATABASE_PASSWORD")
+	dbName = os.Getenv("DATABASE_NAME")
+
+	serverPort = os.Getenv("SERVER_PORT")
+)
+
 func main() {
-	dsn := "host=db port=5432 user=admin password=mypassword dbname=itemstore sslmode=disable"
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", dbHost, dbPort, dbUser, dbPass, dbName)
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		panic(err)
@@ -26,18 +38,13 @@ func main() {
 	}
 
 	userRepo := repository.NewUserPostgresRepo(db)
-	userService := &service.UserService{
-		UserRepo: userRepo,
-	}
+	userService := service.NewUserService(userRepo)
 
 	jwtService := jwt.NewJwtService()
-	userHandler := &handlers.UserHandler{
-		UserService: userService,
-		JwtService: jwtService,
-	}
+	userHandler := handlers.NewUserHandler(userService, jwtService)
 
 	r := router.NewRouter(userHandler)
-	err = http.ListenAndServe(":8000", r)
+	err = http.ListenAndServe(":" + serverPort, r)
 	if err != nil {
 		panic(err)
 	}
